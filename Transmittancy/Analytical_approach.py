@@ -1,0 +1,85 @@
+#%%
+import numpy as np
+import matplotlib.pylab as plt
+import matplotlib.colors as mcolors
+from datetime import datetime
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
+
+import _Ion_info as _Ion_info
+classes = [name for name, obj in vars(_Ion_info).items()
+           if isinstance(obj, type)]
+ion = _Ion_info.Ar
+ion_name = ion.name
+m_ion    = ion.mass
+q_ion    = ion.charge
+print('Chosen ion: {}'.format(ion_name))
+
+import _ExB_probe_info as _ExB_probe_info
+classes = [name for name, obj in vars(_ExB_probe_info).items()
+           if isinstance(obj, type)]
+myExBprobe = _ExB_probe_info.NRL_ExB_probe_Curved
+myExBprobe = _ExB_probe_info.UIUC_ExB_probe
+myExBprobe = _ExB_probe_info.NRL_ExB_probe_6inLong
+print('Chosen ExB probe: {}'.format(myExBprobe))
+
+import _transmittancy_calc as _transmittancy_calc
+g = _transmittancy_calc.geometry()
+f = _transmittancy_calc.field()
+p = _transmittancy_calc.particle(field_obj=f, geom_obj=g)
+
+G     = g._geometric_const_G(myExBprobe) # Geometric constant, 1/m
+α_max = g._max_incident_angle(myExBprobe) # Max incident angle, deg
+
+N           = 60
+M           = 60
+v_ion_array = np.linspace(1e3,60e3,N)
+vwpra_array = np.linspace(1e3,60e3,M)
+Δv_w_array  = m_ion/q_ion*G*vwpra_array**2
+α_x         =  0.0 # the ion incident angle, deg
+α_y         =  0.0 # the ion incident angle, deg
+
+T = np.zeros((M,N))
+start = datetime.now()
+for n in range(0,len(v_ion_array)):
+    for m in range(0,len(vwpra_array)):
+        T[m,n] = p._transmittancy_calculation_analitycal(myExBprobe,ion,vwpra_array[m],v_ion_array[n],α_x,α_y)
+end = datetime.now()
+print('Total computation time : {} s'.format((end - start).total_seconds()))
+print('Average computation time: {} s'.format((end - start).total_seconds()/M/N))
+
+#% Analytical Transmittancy Matrix Export
+FS = 8 # font size in point
+MS = 1 # marker size
+LW = 1 # line width
+DPI = 300 # dot per inch
+figure_size = (3.37,3.37)
+
+XX, YY = np.meshgrid(vwpra_array/1e3, v_ion_array/1e3)
+fig, axs = plt.subplots(1,1,figsize=(160/25.4,80/25.4),dpi=DPI,facecolor='w',sharex=True,sharey=True)
+CS = axs.contourf(XX,YY, T.transpose(), levels=np.linspace(0,1.0,101),cmap='viridis')
+axs.plot(vwpra_array/1e3, vwpra_array+Δv_w_array/1e3, 'w--', lw=LW/2)
+axs.plot(vwpra_array/1e3, vwpra_array-Δv_w_array/1e3, 'w--', lw=LW/2)
+axs.set_title('{}'.format(ion_name) ,fontsize=FS)
+axs.set_ylabel('$v_{ion}$, km/s',fontsize=FS)
+axs.set_xlabel('$v_w$, km/s',fontsize=FS)
+axs.set_xlim((0,120))
+axs.set_ylim(axs.get_xlim())
+axs.set_xticks(np.arange(0,140,20))
+axs.set_yticks(axs.get_xticks())
+axs.tick_params(axis='both', which='major', labelsize=FS)
+axs.tick_params(axis='both', which='minor', labelsize=FS)
+axs.set_aspect('equal', adjustable='box')
+clb = plt.colorbar(CS, ax=axs, ticks=np.linspace(0, 1.0, 11),shrink=0.8, pad=0.01)
+clb.ax.tick_params(labelsize=FS)
+clb.set_label(label='Transmittancy level',size=FS)
+
+T_k = np.zeros((M+1,N+1),dtype=object)
+T_k[0,1:] = v_ion_array
+T_k[1:,0] = vwpra_array
+T_k[1:,1:] = T
+T_k[0,0] = 'v_w[m/s]\\v_ion[m/s];alpha_x={:.1f}[deg];alpha_y={:.1f}[deg];Analytical;{}'.format(α_x,α_y,datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
+np.savetxt( myExBprobe.directory+'T_{}_a (M,N) = ({},{}), v = [{}, {}] kms {}.txt'.format(                              ion_name,M,N,np.min(v_ion_array)/1e3,np.max(v_ion_array)/1e3,myExBprobe.memo),T_k,fmt='%s',delimiter=',')
+plt.savefig(myExBprobe.directory+'T_{}_a (M,N) = ({},{}), v = [{}, {}] kms {} (α_x,α_y) = ({:.2f}°,{:.2f}°).png'.format(ion_name,M,N,np.min(v_ion_array)/1e3,np.max(v_ion_array)/1e3,myExBprobe.memo,α_x,α_y),dpi=DPI, bbox_inches='tight')
