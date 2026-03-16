@@ -21,7 +21,7 @@ print('Chosen ion: {}'.format(ion_name))
 import _ExB_probe_info as _ExB_probe_info
 classes = [name for name, obj in vars(_ExB_probe_info).items()
            if isinstance(obj, type)]
-myExBprobe = _ExB_probe_info.NRL_ExB_probe_CurvedV2
+myExBprobe = _ExB_probe_info.Sample_ExB_probe
 print('Chosen ExB probe: {}'.format(myExBprobe))
 
 import _transmittancy_calc as _transmittancy_calc
