@@ -15,4 +15,4 @@ You can calculate a transmittancy matrix for your ExB probe.
 
 ## What I expect
 I have developed this repository mostly by myself.  
-I want to get your feedback! How do I speed up the calculation? How should we compute the uncertainty?
+I want your feedback! How do I speed up the calculation? How should we compute the uncertainty?
