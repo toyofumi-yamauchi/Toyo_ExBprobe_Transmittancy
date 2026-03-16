@@ -11,7 +11,7 @@ You can calculate a transmittancy matrix for your ExB probe.
 4. Pick an ion you want to calculate for.
 5. Consider a velocity range for your ExB probe operation.
 6. Pick your transmittancy matrix calculation methods (analytical vs numerical).
-7. Run the code, and you'll get a transmittancy matrix!
+7. Run the code in Transmittancy folder, and you'll get a transmittancy matrix!
 
 ## What I expect
 I have developed this repository mostly by myself.  
