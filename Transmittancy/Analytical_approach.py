@@ -18,8 +18,6 @@ q_ion    = ion.charge
 print('Chosen ion: {}'.format(ion_name))
 
 import _ExB_probe_info as _ExB_probe_info
-classes = [name for name, obj in vars(_ExB_probe_info).items()
-           if isinstance(obj, type)]
 myExBprobe = _ExB_probe_info.Sample_ExB_probe
 print('Chosen ExB probe: {}'.format(myExBprobe))
 
@@ -30,6 +28,7 @@ p = _transmittancy_calc.particle(field_obj=f, geom_obj=g)
 
 G     = g._geometric_const_G(myExBprobe) # Geometric constant, 1/m
 α_max = g._max_incident_angle(myExBprobe) # Max incident angle, deg
+Bxpra = f._Bxpra(myExBprobe) # Practical B-field strength, T
 
 N           = 60
 M           = 60
@@ -43,7 +42,22 @@ vwpra_array = np.flip(np.round((v_min - v_max)*(np.tanh(beta*eta_vwpra) / np.tan
 Δv_w_array  = m_ion/q_ion*G*vwpra_array**2
 α_x         =  0.0 # the ion incident angle, deg
 α_y         =  0.0 # the ion incident angle, deg
+print(v_ion_array)
 
+XX, YY = np.meshgrid(vwpra_array/1e3, v_ion_array/1e3)
+plt.figure(figsize=(7, 7))
+# Plot the grid lines (horizontal and vertical lines)
+for i in range(M-1): plt.plot((XX[0,i]+XX[0,i+1])/2*np.ones(N),YY[:, 0], 'k-', linewidth=0.5)
+for j in range(N-1): plt.plot(XX[0,:],(YY[j,:]+YY[j+1,:])/2, 'k-', linewidth=0.5)
+plt.scatter(XX, YY, color='k', s=20*XX*YY/((v_max-v_min)/1000)**2) # Plot nodes
+plt.title(f'Graded Quadrilateral Mesh (tanh, β={beta})')
+plt.xlabel('$v_w$, km/s')
+plt.ylabel('v_ion (m/s)')
+plt.grid(True)
+plt.axis('equal')
+plt.show()
+
+#%%
 T = np.zeros((M,N))
 start = datetime.now()
 for n in range(0,len(v_ion_array)):
@@ -65,8 +79,8 @@ fig, axs = plt.subplots(1,1,figsize=(160/25.4,80/25.4),dpi=DPI,facecolor='w',sha
 CS = axs.pcolormesh(XX,YY, T.transpose(), shading='auto',cmap='viridis',norm=mcolors.Normalize(vmin=0,vmax=1))
 for i in range(M-1): axs.plot((XX[0,i]+XX[0,i+1])/2* np.ones(N),YY[:,0],c='k',ls='-',linewidth=0.1)
 for j in range(N-1): axs.plot( XX[0,:]           ,(YY[j,:]+YY[j+1,:])/2,c='k',ls='-',linewidth=0.1)
-axs.plot(vwpra_array/1e3, (vwpra_array+Δv_w_array)/1e3, 'w--', lw=LW/2)
-axs.plot(vwpra_array/1e3, (vwpra_array-Δv_w_array)/1e3, 'w--', lw=LW/2)
+axs.plot(vwpra_array/1e3, (vwpra_array+Δv_w_array)/1e3, 'r--', lw=LW/2)
+axs.plot(vwpra_array/1e3, (vwpra_array-Δv_w_array)/1e3, 'r--', lw=LW/2)
 axs.set_title('{}'.format(ion_name) ,fontsize=FS)
 axs.set_ylabel('$v_{ion}$, km/s',fontsize=FS)
 axs.set_xlabel('$v_w$, km/s',fontsize=FS)

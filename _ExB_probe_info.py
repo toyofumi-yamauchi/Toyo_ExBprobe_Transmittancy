@@ -25,7 +25,7 @@ class Sample_ExB_probe:
     Bx0_measured  = -0.20 # Actual measured B-field strength, Tesla
     Bx0_simulated =  0.15 # Simulated B-field strength, Tesla
     # Update this value by running _transmittancy_calc.field._Bxpra() for your ExB probe design. 
-    Bxpra         =  0.19 # Practical B-field strength for ExB probe, Tesla. For more information, see Toyofumi Yamauchi and Joshua L. Rovey. "Uncertainty and Data Analysis of ExB Probe including Field Non-Uniformity and Transmittancy," AIAA 2024-0688. AIAA SCITECH 2024 Forum. January 2024.
+    Bxpra         =  0.224 # Practical B-field strength for ExB probe, Tesla. For more information, see Toyofumi Yamauchi and Joshua L. Rovey. "Uncertainty and Data Analysis of ExB Probe including Field Non-Uniformity and Transmittancy," AIAA 2024-0688. AIAA SCITECH 2024 Forum. January 2024.
     # Instead of running multiple E-field simulations, you can use one simulated E-field by scaling it to desired V_electrodes.
     V_electrodes  = 10 # potential difference between the electrodes used in E-field simulation
     
@@ -33,7 +33,7 @@ class Sample_ExB_probe:
     directory              = "../Sample/"                     # directory of these files. The calculated transmittancy matrix will be saved in this directory.
     filename_B             = "Sample_ExB_probe_B.txt"         # B-field data file, which is used for numerical approach.
     filename_E             = "Sample_ExB_probe_E.txt"         # E-field data file, which is used for numerical approach.
-    filename_CAD           = "Sample_ExB_probe_Body.stl"      # CAD file for the whole ExB probe, which is used for numerical approach to determine if the ion hits the probe body or not.
+    filename_CAD           = "Sample_ExB_probe_WholeBody.stl" # CAD file for the whole ExB probe, which is used for numerical approach to determine if the ion hits the probe body or not.
     filename_CAD_collector = "Sample_ExB_probe_Collector.stl" # CAD file for the collector, which is used for numerical approach to determine if the ion hits the collector or not.
     source_units           = 'inch' # the unit of the coordinates in CAD files. "mm", "cm", and "inch" need to be converted to "m".
 
