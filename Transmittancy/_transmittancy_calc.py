@@ -227,7 +227,7 @@ class geometry:
         coun_lost = 0
         coun_collected = 0
 
-        if inside_mesh_body_TF == True:
+        if inside_mesh_body_TF == True or z > mesh_body.bounds[1,2] or z < mesh_body.bounds[0,2]:
             coun_lost = 1
             TF = True
             message = ' - Ion hit wall'
@@ -238,12 +238,6 @@ class geometry:
             TF = True
             message = ' - Ion hit collector'
             if message_TF: print(message)
-
-        # elif z < -(myExBprobe.l_f/2 + myExBprobe.l_c):
-        #     TF = True
-        #     coun_lost = 1
-        #     message = ' - Ion escaped from the 1st aperture'
-        #     if message_TF: print(message)
 
         return TF, coun_lost, coun_collected
     
@@ -615,10 +609,8 @@ class field:
         # on-axis values
         B0 = self._B(myExBprobe, 0.0, 0.0, 0.0)
         E0 = self._E(myExBprobe, 0.0, 0.0, 0.0)
-        # P0 = self._P(myExBprobe, 0.0, 0.0, 0.0)
 
-        # Bx0, Ey0, Po0 = float(B0[0]), float(E0[1]), float(P0[0])
-        Bx0, Ey0 = float(B0[0]), float(E0[1])
+        Bx0, Ey0, Po0 = float(B0[0]), float(E0[1]), float(E0[3])
 
         # vectorized integration along z
         z = np.linspace(-myExBprobe.l_f/2, myExBprobe.l_f/2, N)
@@ -637,11 +629,10 @@ class field:
             print(' B_x,0     = {:.1f} mT (< 0 mT)'.format(Bx0*1e3))
             print(' E_y,0     = {:.2f} V/m (> 0 V/m)'.format(Ey0))
             print(' E_y,0*d_e = {:.2f} V (≈ 10 V)'.format(Ey0*myExBprobe.d_e))
-            # print(' P_0       = {:.2f} V (≈ 0 V)'.format(Po0))
+            print(' P_0       = {:.2f} V (≈ 0 V)'.format(Po0))
             print(' B_x,e = {:.1f} mT, E_y,e = {:.2f} V/m'.format(Bxe*1e3, Eye))
             print(' Eff_B = {:.2f} %, Eff_E = {:.2f} %'.format(Bxe/Bx0*1e2, Eye/Ey0*1e2))
             print(' B_x,pra = {:.1f} mT'.format(Bxpra*1e3))
             print('-------------------------------')
 
-        # return Bxpra, (Bx0, Ey0, Po0, Bxe, Eye)
-        return Bxpra, (Bx0, Ey0, Bxe, Eye)
+        return Bxpra, (Bx0, Ey0, Po0, Bxe, Eye)

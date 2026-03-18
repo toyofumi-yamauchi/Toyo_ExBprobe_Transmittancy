@@ -126,7 +126,7 @@ total_time_seconds = (end - start).total_seconds()
 print('Total computation time : {} s'.format(total_time_seconds))
 print('Average computation time: {} s'.format(total_time_seconds/N_points/len(v_ion_array)/len(vwpra_array)))
 
-#%% Numerical Transmittancy Matrix Export
+#% Numerical Transmittancy Matrix Export
 FS = 8 # font size in poin
 MS = 1 # marker size
 LW = 1 # line width

@@ -14,11 +14,14 @@ class Sample_ExB_probe:
     l_d =  50.0e-3  # drift tube length, m
     d_e =  10.0e-3  # electrode spacing, m
     
-    # Size of electrodes when visualizing traectories
+    # Parameters needed when visualizing trajectories
     z_electrodes = np.array((0.0e-3, 40.0e-3, 40.0e-3,  0.0e-3))
     y_electrodes = np.array((0.0e-3,  0.0e-3,  5.0e-3,  5.0e-3))+d_e/2
     y_electrodes = np.concatenate((y_electrodes, np.flip(y_electrodes)))
     z_electrodes = np.concatenate((z_electrodes,-np.flip(z_electrodes)))
+    r_t          = 10e-3  # tube radius, m
+    l_m          = 100e-3 # magnet length, m
+    d_m          = 40e-3  # magnet separation distance, m
 
     # B-field and E-field parameters
     # You need to correct the magnitude of simulated B-field based on your measurement.
