@@ -126,7 +126,7 @@ total_time_seconds = (end - start).total_seconds()
 print('Total computation time : {} s'.format(total_time_seconds))
 print('Average computation time: {} s'.format(total_time_seconds/N_points/len(v_ion_array)/len(vwpra_array)))
 
-#% Numerical Transmittancy Matrix Export
+#%% Numerical Transmittancy Matrix Export
 FS = 8 # font size in poin
 MS = 1 # marker size
 LW = 1 # line width
@@ -150,7 +150,7 @@ axs.set_yticks(axs.get_xticks())
 axs.tick_params(axis='both', which='major', labelsize=FS)
 axs.tick_params(axis='both', which='minor', labelsize=FS)
 axs.set_aspect('equal', adjustable='box')
-clb = plt.colorbar(CS, ax=axs, ticks=np.linspace(0, 1.0, 11),shrink=1, pad=0.01)
+clb = plt.colorbar(CS, ax=axs, ticks=np.linspace(0, 1.0, 11),shrink=1, pad=0.02)
 clb.ax.tick_params(labelsize=FS)
 clb.set_label(label='Transmittancy level',size=FS)
 
