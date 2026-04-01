@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import _Ion_info as _Ion_info
 classes = [name for name, obj in vars(_Ion_info).items()
            if isinstance(obj, type)]
-ion = _Ion_info.Ar
+ion = _Ion_info.Xe
 ion_name = ion.name
 m_ion    = ion.mass
 q_ion    = ion.charge
@@ -126,7 +126,7 @@ total_time_seconds = (end - start).total_seconds()
 print('Total computation time : {} s'.format(total_time_seconds))
 print('Average computation time: {} s'.format(total_time_seconds/N_points/len(v_ion_array)/len(vwpra_array)))
 
-#%% Numerical Transmittancy Matrix Export
+#% Numerical Transmittancy Matrix Export
 FS = 8 # font size in poin
 MS = 1 # marker size
 LW = 1 # line width

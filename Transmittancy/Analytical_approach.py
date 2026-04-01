@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 import _Ion_info as _Ion_info
 classes = [name for name, obj in vars(_Ion_info).items()
            if isinstance(obj, type)]
-ion = _Ion_info.Ar
+ion = _Ion_info.Xe
 ion_name = ion.name
 m_ion    = ion.mass
 q_ion    = ion.charge
@@ -57,7 +57,7 @@ plt.grid(True)
 plt.axis('equal')
 plt.show()
 
-#%%
+#%
 T = np.zeros((M,N))
 start = datetime.now()
 for n in range(0,len(v_ion_array)):
