@@ -54,7 +54,8 @@ I_sdev = 0.15*I_collected
 N_sample = 3*np.ones(len(V_electrodes))
 I_max = I_collected + 3*I_sdev
 I_min = I_collected - 3*I_sdev
+I_ranges = 1e-7*np.ones(len(V_electrodes))
 Time_array = np.array([datetime(2025,11,13,15,0,0) + i*np.timedelta64(1,'s') for i in range(len(V_electrodes))])
 
-data = np.array((Time_array, V_electrode_p, V_electrode_m, I_collected, I_sdev, N_sample, I_max, I_min)).T
-np.savetxt('Sample_data.txt', data, header=header, comments='', fmt=['%s','%.6e','%.6e','%.6e','%.6e','%.6e','%.6e','%.6e'], delimiter=',')
+data = np.array((Time_array, V_electrode_p, V_electrode_m, I_collected, I_sdev, N_sample, I_max, I_min, I_ranges)).T
+np.savetxt('Sample_data.txt', data, header=header, comments='', fmt=['%s','%.6e','%.6e','%.6e','%.6e','%.6e','%.6e','%.6e','%.6e'], delimiter=',')
