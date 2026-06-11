@@ -69,7 +69,8 @@ class particle:
 
         for n in range(0,n_max-1):
 
-            # Ex,Ey,Ez = _Efield_3D(point)
+            x_old, y_old, z_old = x, y, z
+            
             Ex,Ey,Ez,phi = self.field._E(myExBprobe, x, y, z, scaling_factor)
             Bx,By,Bz     = self.field._B(myExBprobe, x, y, z, myExBprobe.Bx0_measured/myExBprobe.Bx0_simulated)
 
@@ -113,7 +114,8 @@ class particle:
 
             n_last = int(n+1)
 
-            BC_test, counter_lost, counter_collected = self.geom._BC(myExBprobe,x,y,z,output_TF)
+            BC_test, counter_lost, counter_collected = self.geom._BC(myExBprobe,x_old,y_old,z_old,x,y,z,output_TF)
+            
             if BC_test == True:
                 # print(' - Particle out of the boundary at t = {:.2e} s'.format(n*dt))
                 break
@@ -207,7 +209,7 @@ class geometry:
             self._cache.pop(str(filename), None)
 
     #% Boundary condition for numerically calculate transmittancy matrix
-    def _BC(self, myExBprobe, x, y, z, message_TF=True):
+    def _BC(self, myExBprobe, x_before, y_before, z_before, x_after, y_after, z_after, message_TF=True):
 
         filename_body = str(myExBprobe.directory + myExBprobe.filename_CAD)
         source_units = myExBprobe.source_units
@@ -219,26 +221,51 @@ class geometry:
         entry_collector = self._ensure_mesh_loaded(filename_collector,source_units)
         mesh_collector = entry_collector['mesh']
 
-        r = np.hypot(x, y)
-        inside_mesh_body_TF      = mesh_body.contains([(x, y, z)])[0]
-        inside_mesh_collector_TF = mesh_collector.contains([(x, y, z)])[0]
+        start_pt = np.array((x_before, y_before, z_before))
+        end_pt   = np.array((x_after , y_after , z_after))
 
+        segment_vector = end_pt - start_pt
+        segment_length = np.linalg.norm(segment_vector)
+
+        hit_body      = mesh_body.contains([end_pt])[0]
+        hit_collector = mesh_collector.contains([end_pt])[0]
+
+        if segment_length > 1e-9: # 1 nm
+            ray_dir = segment_vector / segment_length
+
+            if not hit_body:
+                locs_body, _, _ = mesh_body.ray.intersects_location(ray_origins=[start_pt], ray_directions=[ray_dir])
+                for loc in locs_body:
+                    if np.linalg.norm(loc - start_pt) <= segment_length:
+                        hit_body = True
+                        break
+
+            if not hit_collector:
+                locs_collector, _, _ = mesh_collector.ray.intersects_location(ray_origins=[start_pt], ray_directions=[ray_dir])
+
+                for loc in locs_collector:
+                    if np.linalg.norm(loc - start_pt) <= segment_length:
+                        hit_collector = True
+                        break
+        
         TF = False
         coun_lost = 0
         coun_collected = 0
 
-        if inside_mesh_body_TF == True or z > mesh_body.bounds[1,2] or z < mesh_body.bounds[0,2]:
+        excited_domain = (z_after > mesh_body.bounds[1,2])
+
+        if hit_body or excited_domain:
             coun_lost = 1
             TF = True
             message = ' - Ion hit wall'
             if message_TF: print(message)
-
-        elif inside_mesh_collector_TF == True:
+        
+        elif hit_collector:
             coun_collected = 1
             TF = True
             message = ' - Ion hit collector'
             if message_TF: print(message)
-
+        
         return TF, coun_lost, coun_collected
     
     def _ensure_mesh_loaded(self, filename: str, source_unit: str) -> dict:
